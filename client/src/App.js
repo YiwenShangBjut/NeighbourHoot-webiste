@@ -1,160 +1,134 @@
-import "./App.css";
-import { useState } from "react";
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import { useForm } from "react-hook-form";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@material-ui/core";
 import Axios from "axios";
 
+
+import "./styles.css";
+import Barcode from 'react-barcode'
+
 function App() {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState(0);
-  const [country, setCountry] = useState("");
-  const [position, setPosition] = useState("");
-  const [wage, setWage] = useState(0);
+  const [showModal, setModal]=useState(false)
+  const [formValues, setFormValues]=useState({
+    name: '',
+    category: '1',
+    condition: '50',
+    price: 10,
+    description: '',
+  })
 
-  const [newWage, setNewWage] = useState(0);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      name: '',
+      category: '1',
+      condition: '50',
+      price: 10,
+      description: '',
+    }
+  });
+  
+  const onSubmit = (data) => {
+    console.log(data);
+    setFormValues(data)
 
-  const [employeeList, setEmployeeList] = useState([]);
-
-  const addEmployee = () => {
     Axios.post("http://localhost:3001/create", {
-      name: name,
-      age: age,
-      country: country,
-      position: position,
-      wage: wage,
-    }).then(() => {
-      setEmployeeList([
-        ...employeeList,
-        {
-          name: name,
-          age: age,
-          country: country,
-          position: position,
-          wage: wage,
-        },
-      ]);
-    });
+        name: formValues.name,
+        category: formValues.category,
+        condition_cat: formValues.condition,
+        price: formValues.price,
+        description: formValues.description,
+      }).then(() => {
+        setModal(true);
+      });
+    
+  }; // your form submit function which will invoke after successful validation
+
+  const handleClose = () => {
+    setModal(false);
   };
 
-  const getEmployees = () => {
-    Axios.get("http://localhost:3001/employees").then((response) => {
-      setEmployeeList(response.data);
-    });
-  };
+  const generateBarcode = () =>{
+    let price = formValues.price
+    price=price*0.01*formValues.condition
+    console.log('price: ',price)
+    let code=formValues.name.substring(0,5).concat(price)
+    console.log('code: ',code)
+    return code
+  }
 
-  const updateEmployeeWage = (id) => {
-    Axios.put("http://localhost:3001/update", { wage: newWage, id: id }).then(
-      (response) => {
-        setEmployeeList(
-          employeeList.map((val) => {
-            return val.id == id
-              ? {
-                  id: val.id,
-                  name: val.name,
-                  country: val.country,
-                  age: val.age,
-                  position: val.position,
-                  wage: newWage,
-                }
-              : val;
-          })
-        );
-      }
-    );
-  };
-
-  const deleteEmployee = (id) => {
-    Axios.delete(`http://localhost:3001/delete/${id}`).then((response) => {
-      setEmployeeList(
-        employeeList.filter((val) => {
-          return val.id != id;
-        })
-      );
-    });
-  };
+  console.log(watch("name")); // you can watch individual input by pass the name of the input
 
   return (
-    <div className="App">
-      <div className="information">
-        <label>Name:</label>
-        <input
-          type="text"
-          onChange={(event) => {
-            setName(event.target.value);
-          }}
-        />
-        <label>Age:</label>
-        <input
-          type="number"
-          onChange={(event) => {
-            setAge(event.target.value);
-          }}
-        />
-        <label>Country:</label>
-        <input
-          type="text"
-          onChange={(event) => {
-            setCountry(event.target.value);
-          }}
-        />
-        <label>Position:</label>
-        <input
-          type="text"
-          onChange={(event) => {
-            setPosition(event.target.value);
-          }}
-        />
-        <label>Wage (year):</label>
-        <input
-          type="number"
-          onChange={(event) => {
-            setWage(event.target.value);
-          }}
-        />
-        <button onClick={addEmployee}>Add Employee</button>
+    <div>
+      <div className="title" >
+        Name of our project
       </div>
-      <div className="employees">
-        <button onClick={getEmployees}>Show Employees</button>
+      <form id='form' onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '30px' }}>
+        {/* register your input into the hook by invoking the "register" function */}
+        <label>Name</label>
+        <input {...register("name", { required: true })} placeholder="Name of the item" />
+        {errors.name && <p>This field is required</p>}
 
-        {employeeList.map((val, key) => {
-          return (
-            <div className="employee">
-              <div>
-                <h3>Name: {val.name}</h3>
-                <h3>Age: {val.age}</h3>
-                <h3>Country: {val.country}</h3>
-                <h3>Position: {val.position}</h3>
-                <h3>Wage: {val.wage}</h3>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="2000..."
-                  onChange={(event) => {
-                    setNewWage(event.target.value);
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    updateEmployeeWage(val.id);
-                  }}
-                >
-                  {" "}
-                  Update
-                </button>
+        <label>Category</label>
 
-                <button
-                  onClick={() => {
-                    deleteEmployee(val.id);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+        <label className="radio-label">Clothing<input {...register("category")} className="radio" type="radio" id="category1" value="1" name="category" defaultChecked /> </label>
+
+        <label className="radio-label">Electronics<input {...register("category")} className="radio" type="radio" id="category2" value="2" name="category" /></label>
+
+        <label className="radio-label">Books<input {...register("category")} className="radio" type="radio" id="category3" value="3" name="category" /></label>
+
+        <label>Condition</label>
+
+        <select {...register("condition")}>
+          <option value="100">Never Worn</option>
+          <option value="75">Very good</option>
+          <option select value="50">Good</option>
+          <option value="25">Fair</option>
+        </select>
+
+        <label>Price at time of purchase</label>
+        <div className="price">
+        <input  type="number" min="1" max="100" className="price-input" {...register("price", { required: true })} />
+        <span className="pound">£</span>
+        </div>
+
+        <label>Description</label>
+        <textarea placeholder="" {...register("description")} />
+
+
+        <button type="submit" >Submit</button>
+      </form>
+
+
+      <Dialog
+        open={showModal}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Here is your barcode"}
+        </DialogTitle>
+        <DialogContent >
+          <Barcode value={generateBarcode()} displayValue={false} />
+
+        </DialogContent>
+        <DialogActions>
+          <Button type="text" onClick={handleClose} >
+            Create a new form
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
-
 export default App;
+
+// const rootElement = document.getElementById("root");
+// ReactDOM.render(<App />, rootElement);
