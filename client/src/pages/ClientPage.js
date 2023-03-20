@@ -1,102 +1,164 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 import Axios from "axios";
 import "../styles.css";
 import Barcode from 'react-barcode'
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
 
 function ClientPage() {
-  const [showModal, setModal]=useState(false)
-  const [formValues, setFormValues]=useState({
-    name: '',
-    category: '1',
-    condition: '50',
-    price: 10,
-    description: '',
-  })
+  const [showModal, setModal] = useState(false)
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState(1);
+  const [condition, setCondition] = useState(50);
+  const [price, setPrice] = useState(3);
+  const [description, setDescription] = useState("");
+  const sliderMarks = [
+    {
+      value: 25,
+      label: 'Fair'
+    },
+    {
+      value: 50,
+      label: 'Good'
+    },
+    {
+      value: 75,
+      label: 'Very Good'
+    },
+    {
+      value: 100,
+      label: 'Never Worn'
+    },
+  ]
+  const radioStyle={
+    color: "white",
+    '&.Mui-checked': {
+      color: "#ec5990",
+    },
+  }
+
+  const sliderStyle={
+    color: "#ec5990",
+    '& .MuiSlider-markLabel': {
+      color: "white",
+      width:'30px'
+    },
+  }
 
   const {
-    register,
     handleSubmit,
-    watch,
     formState: { errors }
-  } = useForm({
-    defaultValues: {
-      name: '',
-      category: '1',
-      condition: '50',
-      price: 10,
-      description: '',
-    }
-  });
-  
-  const onSubmit = (data) => {
-    console.log(data);
-    setFormValues(data)
+  } = useForm();
 
-    Axios.post("http://localhost:3001/create", {
-        name: formValues.name,
-        category: formValues.category,
-        condition_cat: formValues.condition,
-        price: formValues.price,
-        description: formValues.description,
-      }).then(() => {
-        setModal(true);
-      });
-    
+  const onSubmit = () => {
+    let formValues = {
+      name: name,
+      category: category,
+      condition_cat: condition,
+      price: price,
+      description: description,
+    }
+
+    console.log("Submit: ", formValues)
+
+    Axios.post("http://localhost:3001/create", formValues).then(() => {
+      setModal(true);
+    });
+
   }; // your form submit function which will invoke after successful validation
 
   const handleClose = () => {
     setModal(false);
+    setName("")
+    setCategory(1)
+    setCondition(50)
+    setPrice(3)
+    setDescription("")
   };
 
-  const generateBarcode = () =>{
-    let price = formValues.price
-    price=price*0.01*formValues.condition
-    console.log('price: ',price)
-    let code=formValues.name.substring(0,5).concat(price)
-    console.log('code: ',code)
+  const generateBarcode = () => {
+    let result_price = price
+    result_price = price * 0.01 * condition
+    console.log('price: ', result_price)
+    let code = name.substring(0, 5).concat(result_price)
+    console.log('code: ', code)
     return code
   }
 
-  console.log(watch("name")); // you can watch individual input by pass the name of the input
 
   return (
     <div>
       <div className="title" >
-        Name of our project
+        Community Barter
       </div>
       <form id='form' onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '30px' }}>
         {/* register your input into the hook by invoking the "register" function */}
         <label>Name</label>
-        <input {...register("name", { required: true })} placeholder="Name of the item" />
+        <input required placeholder="Name of the item" onChange={(event) => {
+          setName(event.target.value)
+        }} />
         {errors.name && <p>This field is required</p>}
 
         <label>Category</label>
 
-        <label className="radio-label">Clothing<input {...register("category")} className="radio" type="radio" id="category1" value="1" name="category" defaultChecked /> </label>
+        <RadioGroup
+          row
+          aria-labelledby="demo-row-radio-buttons-group-label"
+          name="category"
+          defaultValue={category}
+          onChange={(event) => {
+            setCategory(event.target.value)
+          }}
+        >
+          <FormControlLabel value={1} control={<Radio sx={radioStyle} />} label="Clothing" />
+          <FormControlLabel value={2} control={<Radio sx={radioStyle} />} label="Electronics" />
+          <FormControlLabel value={3} control={<Radio sx={radioStyle} />} label="Books" />
+          <FormControlLabel value={4} control={<Radio sx={radioStyle} />} label="Others" />
 
-        <label className="radio-label">Electronics<input {...register("category")} className="radio" type="radio" id="category2" value="2" name="category" /></label>
+        </RadioGroup>
 
-        <label className="radio-label">Books<input {...register("category")} className="radio" type="radio" id="category3" value="3" name="category" /></label>
 
         <label>Condition</label>
 
-        <select {...register("condition")}>
+
+        <Box sx={{ width: 300 }}>
+          <Slider
+            defaultValue={75}
+            valueLabelDisplay="off"
+            step={25}
+            marks={sliderMarks}
+            className="condition-slder"
+            sx={sliderStyle}
+            min={25}
+            max={100}
+          />
+        </Box>
+        {/* <select onChange={(event) => {
+          setCondition(event.target.value)
+        }}>
           <option value="100">Never Worn</option>
           <option value="75">Very good</option>
           <option select value="50">Good</option>
           <option value="25">Fair</option>
-        </select>
+        </select> */}
 
         <label>Price at time of purchase</label>
         <div className="price">
-        <input  type="number" min="1" max="100" className="price-input" {...register("price", { required: true })} />
-        <span className="pound">£</span>
+          <input defaultValue={price} type="number" min="1" max="100" className="price-input" required onChange={(event) => {
+            setPrice(event.target.value)
+          }} />
+          <span className="pound">£</span>
         </div>
 
         <label>Description</label>
-        <textarea placeholder="" {...register("description")} />
+        <textarea defaultValue={description} placeholder="" onChange={(event) => {
+          setDescription(event.target.value)
+        }} />
 
 
         <button type="submit" >Submit</button>
@@ -113,7 +175,7 @@ function ClientPage() {
           {"Here is your barcode"}
         </DialogTitle>
         <DialogContent >
-          <Barcode value={generateBarcode()} displayValue={false} />
+          {showModal ? <Barcode value={showModal ? generateBarcode() : ""} displayValue={false} /> : null}
 
         </DialogContent>
         <DialogActions>

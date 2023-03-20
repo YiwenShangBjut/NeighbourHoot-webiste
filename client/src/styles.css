@@ -169,3 +169,7 @@ textarea{
   color: white;
   margin-left: 10px;
 }
+
+.MuiSlider-mark{
+  color: white;
+}
