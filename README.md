@@ -1,6 +1,8 @@
 # community-barter
 
 ## Instruction
+After clone the project, run server/database.sql to create database first.
+
 For both client and server, use command
 
 ``yarn add``
