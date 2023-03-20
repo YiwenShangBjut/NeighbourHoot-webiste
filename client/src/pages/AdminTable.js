@@ -177,7 +177,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Community Barter
         </Typography>
       )}
 

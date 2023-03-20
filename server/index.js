@@ -44,6 +44,17 @@ app.get("/barter", (req, res) => {
   });
 });
 
+app.get("/barter/:id", (req, res)=>{
+  const id = req.params.id;
+  db.query("SELECT * FROM barter WHERE barter.user_id=?",id, (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.send(result);
+        }
+      });
+});
+
 // app.put("/update", (req, res) => {
 //   const id = req.body.id;
 //   const description = req.body.description;
