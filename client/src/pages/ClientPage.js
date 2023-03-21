@@ -37,7 +37,7 @@ function ClientPage() {
   ]
   const radioStyle={
     color: "white",
-    '&.Mui-checked': {
+    '& .Mui-checked': {
       color: "#ec5990",
     },
   }
