@@ -8,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-  user: process.env.RDS_USERNAME,
-  host:process.env.RDS_HOSTNAME,
-  password: process.env.RDS_PASSWORD,
-  database: process.env.RDS_DB_NAME,
+  user: process.env.DB_USER,
+  host:process.env.DB_HOST,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
 });
 
 app.post("/create", (req, res) => {
