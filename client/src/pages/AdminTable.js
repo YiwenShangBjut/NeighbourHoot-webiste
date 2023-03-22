@@ -42,10 +42,6 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -84,10 +80,10 @@ const headCells = [
     label: 'Price (£)',
   },
   {
-    id: 'description',
+    id: 'datails',
     numeric: false,
     disablePadding: false,
-    label: 'Description',
+    label: 'Details',
   },
 ];
 

@@ -16,8 +16,6 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import Link from '@mui/material/Link';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -28,6 +26,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { visuallyHidden } from '@mui/utils';
 import Axios from "axios";
 import { createBrowserHistory } from 'history'
+import { HOST_URL } from "../configure";
 
 const status_list = ["Pending", "Decided", "Listed", "Sold"]
 
@@ -199,7 +198,7 @@ export default function UserTable() {
 
 
     useEffect(() => {
-        Axios.get("http://localhost:3001/barter/" + localStorage.getItem("userId")).then((data) => {
+        Axios.get(HOST_URL+"/barter/" + localStorage.getItem("userId")).then((data) => {
             setRows(data.data)
             let idList=[]
             data.data.map((v,i)=>{

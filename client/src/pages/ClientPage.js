@@ -3,12 +3,14 @@ import { useForm } from "react-hook-form";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 import Axios from "axios";
 import "../styles.css";
-import Barcode from 'react-barcode'
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { HOST_URL } from "../configure";
+import { createBrowserHistory } from 'history'
 
 function ClientPage() {
   const [showModal, setModal] = useState(false)
@@ -62,11 +64,12 @@ function ClientPage() {
       condition_cat: condition,
       price: price,
       description: description,
+      user_id: localStorage.getItem('userId')
     }
 
     console.log("Submit: ", formValues)
 
-    Axios.post("http://localhost:3001/create", formValues).then(() => {
+    Axios.post(HOST_URL+"/create", formValues).then(() => {
       setModal(true);
     });
 
@@ -81,9 +84,25 @@ function ClientPage() {
     setDescription("")
   };
 
+  const history = createBrowserHistory()
+
+  const handleBackClick=()=>{
+    history.replace({pathname:'/user',state: {}})
+    history.go(0)
+  }
+
 
   return (
     <div>
+      <div >
+       
+        <Button variant="text"  onClick={handleBackClick}>
+        <div style={{color:'white',display:'flex',alignItems: 'center'}}>
+          <ArrowBackIosIcon sx={{color:'white'}} />
+         <div> Back to barter history</div>
+         </div>
+        </Button>
+      </div>
       <div className="title" >
         Community Barter
       </div>

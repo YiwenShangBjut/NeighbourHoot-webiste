@@ -3,7 +3,7 @@ import { Button, Box } from "@material-ui/core";
 import { createBrowserHistory } from 'history'
 import logoImg from '../assets/logo192.png'
 import Axios from "axios";
-
+import { HOST_URL } from "../configure";
 
 function SplashPage() {
     const [username, setUsername] = useState("");
@@ -12,7 +12,7 @@ function SplashPage() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        Axios.get("http://localhost:3001/user/"+username).then((data) => {
+        Axios.get(HOST_URL+"/user/"+username).then((data) => {
          
           localStorage.setItem("userId",data.data[0].id);
     });
