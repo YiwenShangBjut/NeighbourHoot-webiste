@@ -81,15 +81,6 @@ function ClientPage() {
     setDescription("")
   };
 
-  const generateBarcode = () => {
-    let result_price = price
-    result_price = price * 0.01 * condition
-    console.log('price: ', result_price)
-    let code = name.substring(0, 5).concat(result_price)
-    console.log('code: ', code)
-    return code
-  }
-
 
   return (
     <div>
@@ -99,7 +90,7 @@ function ClientPage() {
       <form id='form' onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '30px' }}>
         {/* register your input into the hook by invoking the "register" function */}
         <label>Name</label>
-        <input required placeholder="Name of the item" onChange={(event) => {
+        <input required placeholder="Name of the item" value={name} onChange={(event) => {
           setName(event.target.value)
         }} />
         {errors.name && <p>This field is required</p>}
@@ -111,6 +102,7 @@ function ClientPage() {
           aria-labelledby="demo-row-radio-buttons-group-label"
           name="category"
           defaultValue={category}
+          value={category}
           onChange={(event) => {
             setCategory(event.target.value)
           }}
@@ -138,25 +130,17 @@ function ClientPage() {
             max={100}
           />
         </Box>
-        {/* <select onChange={(event) => {
-          setCondition(event.target.value)
-        }}>
-          <option value="100">Never Worn</option>
-          <option value="75">Very good</option>
-          <option select value="50">Good</option>
-          <option value="25">Fair</option>
-        </select> */}
 
         <label>Price at time of purchase</label>
         <div className="price">
-          <input defaultValue={price} type="number" min="1" max="100" className="price-input" required onChange={(event) => {
+          <input defaultValue={price} value={price} type="number" min="1" max="100" className="price-input" required onChange={(event) => {
             setPrice(event.target.value)
           }} />
           <span className="pound">£</span>
         </div>
 
         <label>Description</label>
-        <textarea defaultValue={description} placeholder="" onChange={(event) => {
+        <textarea defaultValue={description} value={description} placeholder="" onChange={(event) => {
           setDescription(event.target.value)
         }} />
 
@@ -170,17 +154,17 @@ function ClientPage() {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        sx={{height:'100px'}}
       >
         <DialogTitle id="alert-dialog-title">
-          {"Here is your barcode"}
+          {"New barter create successful"}
         </DialogTitle>
-        <DialogContent >
-          {showModal ? <Barcode value={showModal ? generateBarcode() : ""} displayValue={false} /> : null}
-
+        <DialogContent>
+          {"Please wait for the review to pass, it will take about 24 hours"}
         </DialogContent>
         <DialogActions>
           <Button type="text" onClick={handleClose} >
-            Create a new form
+            Create a new barter
           </Button>
         </DialogActions>
       </Dialog>
@@ -189,5 +173,3 @@ function ClientPage() {
 }
 export default ClientPage;
 
-// const rootElement = document.getElementById("root");
-// ReactDOM.render(<App />, rootElement);

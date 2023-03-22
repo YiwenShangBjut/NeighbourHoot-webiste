@@ -107,7 +107,7 @@ input[type="submit"] {
 button[type="button"] {
   display: block;
   appearance: none;
-  background: #333;
+  /* background: #333; */
   color: white;
   border: none;
   text-transform: uppercase;
@@ -175,3 +175,12 @@ textarea{
 .MuiSlider-mark{
   color: white;
 }
+
+.addButton{
+  color:#353535;
+  width: 2em;
+  height: 2em;
+}
+
+
+

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Box } from "@material-ui/core";
-import { createHashHistory } from 'history'
+import { createBrowserHistory } from 'history'
 import logoImg from '../assets/logo192.png'
 import Axios from "axios";
 
@@ -8,7 +8,7 @@ import Axios from "axios";
 function SplashPage() {
     const [username, setUsername] = useState("");
 
-    const history = createHashHistory()
+    const history = createBrowserHistory()
 
     function handleSubmit(event) {
         event.preventDefault();

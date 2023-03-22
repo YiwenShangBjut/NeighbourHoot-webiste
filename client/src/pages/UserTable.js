@@ -24,8 +24,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 import Barcode from 'react-barcode'
+import AddIcon from '@mui/icons-material/Add';
 import { visuallyHidden } from '@mui/utils';
 import Axios from "axios";
+import { createBrowserHistory } from 'history'
 
 const status_list = ["Pending", "Decided", "Listed", "Sold"]
 
@@ -140,7 +142,11 @@ EnhancedTableHead.propTypes = {
 
 function EnhancedTableToolbar(props) {
     const { numSelected } = props;
-
+    const history = createBrowserHistory()
+    const handleAddClick = ()=>{
+        history.replace({pathname:'/create',state: {}})
+        history.go(0)
+    }
     return (
         <Toolbar
             sx={{
@@ -152,16 +158,7 @@ function EnhancedTableToolbar(props) {
                 }),
             }}
         >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
+           
                 <Typography
                     sx={{ flex: '1 1 100%' }}
                     variant="h6"
@@ -170,21 +167,16 @@ function EnhancedTableToolbar(props) {
                 >
                     Community Barter
                 </Typography>
-            )}
+            
 
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
+            
+                <Tooltip title="Create new barter">
+                    <IconButton size="large" sx={{padding:'1px'}} onClick={handleAddClick}>
+                        <AddIcon className="addButton"/>
                     </IconButton>
                 </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
+            
+           
         </Toolbar>
     );
 }
@@ -261,13 +253,13 @@ export default function UserTable() {
     }
 
     const generateBarcode = (index) => {
-        console.log('index is', index)
-        console.log('rows[index] is', rows[index])
+        // console.log('index is', index)
+        // console.log('rows[index] is', rows[index])
         let result_price = rows[index].deal_price
         result_price = rows[index].deal_price * 0.01 * rows[index].condition_cat
-        console.log('price: ', result_price)
+        // console.log('price: ', result_price)
         let code = rows[index].name.substring(0, 5).concat(result_price)
-        console.log('code: ', code)
+        // console.log('code: ', code)
         return code
     }
 
@@ -337,6 +329,7 @@ export default function UserTable() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
+
             <Dialog
                 open={showModal}
                 onClose={() => setModal(false)}
@@ -348,7 +341,7 @@ export default function UserTable() {
                 </DialogTitle>
                 <DialogContent >
                     {showModal ? <Barcode value={showModal ? generateBarcode(selectedIndex) : ""} displayValue={false} /> : null}
-                      {selectedIndex}              
+                                
                 </DialogContent>
                 <DialogActions>
                     <Button type="text" onClick={() => { setModal(false) }} >
