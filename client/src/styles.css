@@ -113,6 +113,12 @@ button[type="button"] {
   text-transform: uppercase;
   padding: 10px 20px;
   border-radius: 4px;
+ 
+}
+
+.addButton {
+  width:300px;
+  cursor: pointer;
 }
 
 hr {
@@ -175,12 +181,4 @@ textarea{
 .MuiSlider-mark{
   color: white;
 }
-
-.addButton{
-  color:#353535;
-  width: 2em;
-  height: 2em;
-}
-
-
 

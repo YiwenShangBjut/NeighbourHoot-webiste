@@ -14,7 +14,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -73,7 +72,7 @@ const headCells = [
     },
     {
         id: 'status',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Status',
     },
@@ -142,8 +141,8 @@ EnhancedTableHead.propTypes = {
 function EnhancedTableToolbar(props) {
     const { numSelected } = props;
     const history = createBrowserHistory()
-    const handleAddClick = ()=>{
-        history.replace({pathname:'/create',state: {}})
+    const handleAddClick = () => {
+        history.replace({ pathname: '/create', state: {} })
         history.go(0)
     }
     return (
@@ -157,25 +156,29 @@ function EnhancedTableToolbar(props) {
                 }),
             }}
         >
-           
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Community Barter
-                </Typography>
-            
 
-            
-                <Tooltip title="Create new barter">
-                    <IconButton size="large" sx={{padding:'1px'}} onClick={handleAddClick}>
-                        <AddIcon className="addButton"/>
-                    </IconButton>
-                </Tooltip>
-            
-           
+            <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h6"
+                id="tableTitle"
+                component="div"
+            >
+                Community Barter
+            </Typography>
+
+
+
+            <Tooltip title="Create new barter">
+                <Button variant="text" onClick={handleAddClick} className="addButton">
+                    <div style={{ color: '#333', display: 'flex', alignItems: 'center' }}>
+                        <AddIcon sx={{ color: '#333' }} />
+                        <div style={{marginLeft:'10px'}}> Create new barter</div>
+                    </div>
+                </Button>
+
+            </Tooltip>
+
+
         </Toolbar>
     );
 }
@@ -193,15 +196,15 @@ export default function UserTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [rows, setRows] = React.useState([])
     const [showModal, setModal] = React.useState(false)
-    const [rowIdList,setRowIdList]=React.useState([])
-    const [selectedIndex, setSelectedIndex]= React.useState(0)
+    const [rowIdList, setRowIdList] = React.useState([])
+    const [selectedIndex, setSelectedIndex] = React.useState(0)
 
 
     useEffect(() => {
-        Axios.get(HOST_URL+"/barter/" + localStorage.getItem("userId")).then((data) => {
+        Axios.get(HOST_URL + "/barter/" + localStorage.getItem("userId")).then((data) => {
             setRows(data.data)
-            let idList=[]
-            data.data.map((v,i)=>{
+            let idList = []
+            data.data.map((v, i) => {
                 idList.push(v.id)
             })
             setRowIdList(idList)
@@ -237,9 +240,9 @@ export default function UserTable() {
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const handleClick = (event, id) => {
-        console.log('id is',id)
-        console.log("rowIdList:",rowIdList)
-     
+        // console.log('id is', id)
+        // console.log("rowIdList:", rowIdList)
+
         setSelectedIndex(rowIdList.indexOf(id))
         setModal(true)
     };
@@ -252,18 +255,14 @@ export default function UserTable() {
     }
 
     const generateBarcode = (index) => {
-        // console.log('index is', index)
-        // console.log('rows[index] is', rows[index])
         let result_price = rows[index].deal_price
         result_price = rows[index].deal_price * 0.01 * rows[index].condition_cat
-        // console.log('price: ', result_price)
-        let code = rows[index].name.substring(0, 5).concat(result_price)
-        // console.log('code: ', code)
+        let code = rows[index].name.substring(0, 5).concat(rows[index].deal_price)
         return code
     }
 
     return (
-        <Box sx={{ width: '100%', padding: '50px' }}>
+        <Box sx={{ width: '100%', paddingTop: '50px' }}>
             <Paper sx={{ width: '80%', mb: 2, margin: '0 auto' }}>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <TableContainer>
@@ -340,7 +339,7 @@ export default function UserTable() {
                 </DialogTitle>
                 <DialogContent >
                     {showModal ? <Barcode value={showModal ? generateBarcode(selectedIndex) : ""} displayValue={false} /> : null}
-                                
+
                 </DialogContent>
                 <DialogActions>
                     <Button type="text" onClick={() => { setModal(false) }} >

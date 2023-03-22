@@ -16,14 +16,11 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import Link from '@mui/material/Link';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
-import Barcode from 'react-barcode'
 import AddIcon from '@mui/icons-material/Add';
 import { visuallyHidden } from '@mui/utils';
 import Axios from "axios";
@@ -32,6 +29,8 @@ import { HOST_URL } from "../configure";
 
 
 const status_list = ["Pending", "Decided", "Listed", "Sold"]
+const category_list = ["Clothing", "Electronics", "Books", "Others"]
+const condition_list = ["", "Fair", "Good", "Very good", "Never Worn"]
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -76,7 +75,7 @@ const headCells = [
     },
     {
         id: 'status',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Status',
     },
@@ -87,10 +86,16 @@ const headCells = [
         label: 'Decided Price (£)',
     },
     {
-        id: 'bacode',
+        id: 'details',
         numeric: true,
         disablePadding: false,
-        label: 'Barcode',
+        label: 'Details',
+    },
+    {
+        id: 'action',
+        numeric: true,
+        disablePadding: false,
+        label: 'Action',
     },
 ];
 
@@ -145,8 +150,8 @@ EnhancedTableHead.propTypes = {
 function EnhancedTableToolbar(props) {
     const { numSelected } = props;
     const history = createBrowserHistory()
-    const handleAddClick = ()=>{
-        history.replace({pathname:'/create',state: {}})
+    const handleAddClick = () => {
+        history.replace({ pathname: '/create', state: {} })
         history.go(0)
     }
     return (
@@ -160,25 +165,25 @@ function EnhancedTableToolbar(props) {
                 }),
             }}
         >
-           
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Community Barter
-                </Typography>
-            
 
-            
-                <Tooltip title="Create new barter">
-                    <IconButton size="large" sx={{padding:'1px'}} onClick={handleAddClick}>
-                        <AddIcon className="addButton"/>
-                    </IconButton>
-                </Tooltip>
-            
-           
+            <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h6"
+                id="tableTitle"
+                component="div"
+            >
+                Community Barter
+            </Typography>
+
+
+
+            <Tooltip title="Create new barter">
+                <IconButton size="large" sx={{ padding: '1px' }} onClick={handleAddClick}>
+                    <AddIcon className="addButton" />
+                </IconButton>
+            </Tooltip>
+
+
         </Toolbar>
     );
 }
@@ -187,7 +192,7 @@ EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 };
 
-export default function UserTable() {
+export default function AdminPage() {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
@@ -196,15 +201,16 @@ export default function UserTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [rows, setRows] = React.useState([])
     const [showModal, setModal] = React.useState(false)
-    const [rowIdList,setRowIdList]=React.useState([])
-    const [selectedIndex, setSelectedIndex]= React.useState(0)
-
+    const [rowIdList, setRowIdList] = React.useState([])
+    const [selectedIndex, setSelectedIndex] = React.useState(0)
+    const [showActionModal, setActionModal] = React.useState(false)
+    const [decidedPrice, setDecidedPrice] = React.useState(0)
 
     useEffect(() => {
-        Axios.get(HOST_URL+"/barter/" + localStorage.getItem("userId")).then((data) => {
+        Axios.get(HOST_URL + "/barter").then((data) => {
             setRows(data.data)
-            let idList=[]
-            data.data.map((v,i)=>{
+            let idList = []
+            data.data.map((v, i) => {
                 idList.push(v.id)
             })
             setRowIdList(idList)
@@ -239,34 +245,96 @@ export default function UserTable() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleClick = (event, id) => {
-        console.log('id is',id)
-        console.log("rowIdList:",rowIdList)
-     
+    const handleClickDetails = (event, id) => {
+        console.log('id is', id)
+        console.log("rowIdList:", rowIdList)
+
         setSelectedIndex(rowIdList.indexOf(id))
         setModal(true)
     };
 
-    const barcode = (row) => {
+    const handleClickAction = (event, id) => {
+        console.log('id is', id)
+        console.log("rowIdList:", rowIdList)
+
+        setSelectedIndex(rowIdList.indexOf(id))
+        setActionModal(true)
+    };
+
+    const decidedPriceText = (index) => {
+        if (rows[index]) {
+            if (rows[index].status == 0) {
+                return (<div style={detailStyle}><div style={detailTitleStyle}>Decide Price:</div> {'Wait to decide'}</div>)
+            } else {
+                return (<div style={detailStyle}><div style={detailTitleStyle}>Decide Price:</div>  {rows[index].deal_price}</div>)
+            }
+        } else {
+            return
+        }
+    }
+
+    const details = (row) => {
 
         return (
-            <Link onClick={(event) => handleClick(event, row.id)}>See barcode</Link>
+            <Link onClick={(event) => handleClickDetails(event, row.id)}>See detials</Link>
         )
     }
 
-    const generateBarcode = (index) => {
-        // console.log('index is', index)
-        // console.log('rows[index] is', rows[index])
-        let result_price = rows[index].deal_price
-        result_price = rows[index].deal_price * 0.01 * rows[index].condition_cat
-        // console.log('price: ', result_price)
-        let code = rows[index].name.substring(0, 5).concat(result_price)
-        // console.log('code: ', code)
-        return code
+    const action = (row) => {
+        if(row.status==0){
+            return (
+                <Link onClick={(event) => handleClickAction(event, row.id)}>Decide price</Link>
+            )
+        }else{
+            return(
+                <div style={{color:'c0c0c0'}}></div>
+            )
+        }
+
+    }
+
+    const detailDialogAction = (index) => {
+        if (rows[index]) {
+            if (rows[index].status == 0) {
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'row', margin: '30px' }}>
+                        <Button sx={{ marginLeft: '20px' }} onClick={() => { setModal(false); setActionModal(true) }} >
+                            <div style={{ color: "#ec5990" }}> Decide price</div>
+                        </Button>
+                        <Button type="text" onClick={() => { setModal(false) }} >
+                            Close
+                        </Button>
+                    </div>
+                )
+            }
+        } else {
+            return
+        }
+
+
+    }
+
+    const handleSubmitPrice = () => {
+        Axios.put(HOST_URL + "/update", { id: localStorage.getItem('userId'), status: 1, price: decidedPrice }).then((response) => {
+
+            setActionModal(false)
+        });
+
+    }
+
+    const detailStyle = {
+        display: 'flex',
+        flexDirection: 'row',
+        margin: '20px'
+    }
+
+    const detailTitleStyle = {
+        marginRight: '10px',
+        fontWeight: 'bold'
     }
 
     return (
-        <Box sx={{ width: '100%', padding: '50px' }}>
+        <Box sx={{ width: '100%', paddingTop: '50px' }}>
             <Paper sx={{ width: '80%', mb: 2, margin: '0 auto' }}>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <TableContainer>
@@ -303,9 +371,10 @@ export default function UserTable() {
                                                 {row.name}
                                             </TableCell>
                                             <TableCell align="right">{row.price}</TableCell>
-                                            <TableCell align="justify">{status_list[row.status]}</TableCell>
+                                            <TableCell align="right">{status_list[row.status]}</TableCell>
                                             <TableCell align="right">{row.status == 0 ? 'wait to decide' : row.deal_price}</TableCell>
-                                            <TableCell align="right">{row.status == 0 ? '' : barcode(row)}</TableCell>
+                                            <TableCell align="right">{details(row)}</TableCell>
+                                            <TableCell align="right">{action(row)}</TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -342,13 +411,47 @@ export default function UserTable() {
                     {"Details"}
                 </DialogTitle>
                 <DialogContent >
+                    <div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Name:</div> {rows[selectedIndex] ? rows[selectedIndex].name : ''}</div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Stauts:</div> {rows[selectedIndex] ? status_list[rows[selectedIndex].status] : ''}</div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Category:</div> {rows[selectedIndex] ? category_list[rows[selectedIndex].category] : ''}</div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Condition:</div>{rows[selectedIndex] ? condition_list[rows[selectedIndex].condition_cat / 25] : ''}</div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Original Price:</div> {rows[selectedIndex] ? rows[selectedIndex].price : ''}</div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Description:</div> {rows[selectedIndex] ? rows[selectedIndex].description : ''}</div>
+                        {decidedPriceText(selectedIndex)}
+
+                    </div>
 
 
-                    
                 </DialogContent>
                 <DialogActions>
-                    <Button type="text" onClick={() => { setModal(false) }} >
-                        Close
+                    {detailDialogAction(selectedIndex)}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={showActionModal}
+                onClose={() => setActionModal(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Decide a price for this item"}
+                </DialogTitle>
+                <DialogContent >
+                    <div>
+
+                        <input style={{ borderColor: "#333" }} required placeholder="Price" onChange={(event) => {
+                            setDecidedPrice(event.target.value)
+                        }} />
+
+                    </div>
+
+
+                </DialogContent>
+                <DialogActions>
+                    <Button sx={{ marginLeft: '20px' }} onClick={() => { handleSubmitPrice() }} >
+                        <div style={{ color: "#ec5990" }}> Submit</div>
                     </Button>
                 </DialogActions>
             </Dialog>
