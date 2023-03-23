@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/community-barter/static/css/main.40a06450.chunk.css",
+    "main.js": "/community-barter/static/js/main.25285ef8.chunk.js",
+    "main.js.map": "/community-barter/static/js/main.25285ef8.chunk.js.map",
+    "runtime-main.js": "/community-barter/static/js/runtime-main.01778195.js",
+    "runtime-main.js.map": "/community-barter/static/js/runtime-main.01778195.js.map",
+    "static/js/2.068d38ca.chunk.js": "/community-barter/static/js/2.068d38ca.chunk.js",
+    "static/js/2.068d38ca.chunk.js.map": "/community-barter/static/js/2.068d38ca.chunk.js.map",
+    "index.html": "/community-barter/index.html",
+    "static/css/main.40a06450.chunk.css.map": "/community-barter/static/css/main.40a06450.chunk.css.map",
+    "static/js/2.068d38ca.chunk.js.LICENSE.txt": "/community-barter/static/js/2.068d38ca.chunk.js.LICENSE.txt",
+    "static/media/logo_black.e90eca9d.png": "/community-barter/static/media/logo_black.e90eca9d.png",
+    "static/media/logo_white.13f98ca8.png": "/community-barter/static/media/logo_white.13f98ca8.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.01778195.js",
+    "static/js/2.068d38ca.chunk.js",
+    "static/css/main.40a06450.chunk.css",
+    "static/js/main.25285ef8.chunk.js"
+  ]
+}
