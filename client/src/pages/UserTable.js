@@ -26,8 +26,9 @@ import { visuallyHidden } from '@mui/utils';
 import Axios from "axios";
 import { createBrowserHistory } from 'history'
 import { HOST_URL } from "../configure";
+import logoImg from '../assets/logo_white.png'
 
-const status_list = ["Pending", "Decided", "Listed", "Sold"]
+const status_list = ["Pending", "Approved", "Listed", "Sold", "Refused"]
 const category_list = ["Clothing", "Electronics", "Books", "Others"]
 const condition_list = ["", "Fair", "Good", "Very good", "Never Worn"]
 
@@ -166,20 +167,22 @@ function EnhancedTableToolbar(props) {
                 id="tableTitle"
                 component="div"
             >
-                Community Barter
+                Barter items
             </Typography>
 
 
 
-            <Tooltip title="Create new barter">
-                <Button variant="text" onClick={handleAddClick} className="addButton">
-                    <div style={{ color: '#333', display: 'flex', alignItems: 'center' }}>
-                        <AddIcon sx={{ color: '#333' }} />
-                        <div style={{ marginLeft: '10px' }}> Create new barter</div>
-                    </div>
-                </Button>
 
-            </Tooltip>
+            <Button onClick={handleAddClick} style={{ backgroundColor: '#ec5990', width: '330px', height: '50px', padding: '15px', borderRadius: '5px', marginRight: '10px' }} >
+                <div style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
+                    <AddIcon sx={{ color: 'white' }} />
+                    <div style={{ marginLeft: '10px' }}> Create new barter</div>
+                </div>
+
+            </Button>
+
+
+
 
 
         </Toolbar>
@@ -365,18 +368,22 @@ export default function UserTable() {
         return code
     }
 
-    const handleLogout=()=>{
+    const handleLogout = () => {
         localStorage.clear()
-        history.replace({pathname:'/',state: {}})
+        history.replace({ pathname: '/', state: {} })
         history.go(0)
     }
 
     return (
         <Box sx={{ width: '100%', paddingTop: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'right' }}>
-                <Button type="text" style={{paddingRight: '20px'}} onClick={() => {handleLogout() }} >
+                <Button type="text" style={{ paddingRight: '20px' }} onClick={() => { handleLogout() }} >
                     <div style={{ color: "white", fontSize: '20px' }}> Logout</div>
                 </Button>
+            </div>
+
+            <div className="title">
+                <img style={{ width: '500px', margin: '30px' }} src={logoImg} alt="" />
             </div>
 
             <div id="counter" style={{ display: 'flex', justifyContent: 'center' }}>

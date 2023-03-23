@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Box } from "@material-ui/core";
 import { createBrowserHistory } from 'history'
-import logoImg from '../assets/logo192.png'
+import logoImg from '../assets/logo_white.png'
 import Axios from "axios";
 import { HOST_URL } from "../configure";
 
@@ -21,11 +21,9 @@ function SplashPage() {
         history.go(0)
     } return (
         <div>
-            <div className="title" >
-                Community Barter
-            </div>
-            <div className="title" >
-                <img src={logoImg} alt="" />
+           
+            <div className="title">
+                <img style={{width:'500px', margin:'30px'}} src={logoImg} alt="" />
             </div>
 
             <Box display="flex" justifyContent="center" alignItems="center" >

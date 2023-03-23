@@ -30,9 +30,9 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import Alert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
+import logoImg from '../assets/logo_black.png'
 
-
-const status_list = ["Pending", "Approved", "Listed", "Sold", "Reject"]
+const status_list = ["Pending", "Approved", "Listed", "Sold", "Refused"]
 const category_list = ["Clothing", "Electronics", "Books", "Others"]
 const condition_list = ["", "Fair", "Good", "Very good", "Never Worn"]
 
@@ -158,16 +158,11 @@ function EnhancedTableToolbar(props) {
             }}
         >
 
-            <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h6"
-                id="tableTitle"
-                component="div"
-            >
-                Community Barter
-            </Typography>
+        
 
-
+            <div>
+                <img style={{width:'300px', margin:'10px'}} src={logoImg} alt="" />
+            </div>
 
             <Tooltip title="Create new barter">
                 <IconButton size="large" sx={{ padding: '1px' }} onClick={handleAddClick}>
@@ -196,7 +191,6 @@ export default function AdminPage() {
     const [rowIdList, setRowIdList] = React.useState([])
     const [selectedIndex, setSelectedIndex] = React.useState(0)
     const [showActionModal, setActionModal] = React.useState(false)
-    const [decidedPrice, setDecidedPrice] = React.useState(0)
     const [isApprove, setIsApprove] = React.useState(false)
     const [successful, setSuccessful] = React.useState(false)
 
@@ -298,24 +292,24 @@ export default function AdminPage() {
 
     }
 
-    const showAlert =()=>{
+    const showAlert = () => {
         setSuccessful(true)
         setTimeout(() => {
             // After 3 seconds set the show value to false
             setSuccessful(false)
-          }, 3000)
-    } 
-  
+        }, 3000)
+    }
+
     const handleAction = () => {
         if (isApprove) {
-            Axios.put(HOST_URL + "/update", { id: rows[selectedIndex].id, status: 1 }).then((response) => {
+            Axios.put(HOST_URL + "/update/barter", { id: rows[selectedIndex].id, status: 1 }).then((response) => {
                 setActionModal(false)
                 updateBarterList()
                 showAlert()
 
             });
         } else {
-            Axios.put(HOST_URL + "/update", { id: rows[selectedIndex].id, status: 4 }).then((response) => {
+            Axios.put(HOST_URL + "/update/barter", { id: rows[selectedIndex].id, status: 4 }).then((response) => {
                 setActionModal(false)
                 updateBarterList()
                 showAlert()
@@ -337,13 +331,13 @@ export default function AdminPage() {
     return (
         <Box sx={{ width: '100%', paddingTop: '20px' }}>
             {
-                successful?<Slide direction="left" in={successful} mountOnEnter unmountOnExit>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Alert sx={{ width: '20%', mb: 2, marginButton: '30px' }} severity="success">You successfully update the status of item</Alert>
-                </div>
-            </Slide>:<div style={{height:'45px', width:'100%'}}></div>
+                successful ? <Slide direction="left" in={successful} mountOnEnter unmountOnExit>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Alert sx={{ width: '20%', mb: 2, marginButton: '30px' }} severity="success">You successfully update the status of item</Alert>
+                    </div>
+                </Slide> : <div style={{ height: '45px', width: '100%' }}></div>
             }
-            
+
             <Paper sx={{ width: '50%', mb: 2, margin: '0 auto' }}>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <TableContainer>

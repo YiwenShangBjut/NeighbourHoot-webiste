@@ -11,6 +11,7 @@ import Slider from '@mui/material/Slider';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { HOST_URL } from "../configure";
 import { createBrowserHistory } from 'history'
+import logoImg from '../assets/logo_white.png'
 
 function ClientPage() {
   const [showModal, setModal] = useState(false)
@@ -37,18 +38,18 @@ function ClientPage() {
       label: 'Never Worn'
     },
   ]
-  const radioStyle={
+  const radioStyle = {
     color: "white",
     '& .Mui-checked': {
       color: "#ec5990",
     },
   }
 
-  const sliderStyle={
+  const sliderStyle = {
     color: "#ec5990",
     '& .MuiSlider-markLabel': {
       color: "white",
-      width:'30px'
+      width: '30px'
     },
   }
 
@@ -69,7 +70,7 @@ function ClientPage() {
 
     console.log("Submit: ", formValues)
 
-    Axios.post(HOST_URL+"/create", formValues).then(() => {
+    Axios.post(HOST_URL + "/create", formValues).then(() => {
       setModal(true);
     });
 
@@ -86,33 +87,33 @@ function ClientPage() {
 
   const history = createBrowserHistory()
 
-  const handleBackClick=()=>{
-    history.replace({pathname:'/user',state: {}})
+  const handleBackClick = () => {
+    history.replace({ pathname: '/user', state: {} })
     history.go(0)
   }
 
-  const handleLogout=()=>{
+  const handleLogout = () => {
     localStorage.clear()
-    history.replace({pathname:'/',state: {}})
+    history.replace({ pathname: '/', state: {} })
     history.go(0)
-}
+  }
 
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button variant="text"  onClick={handleBackClick}>
-        <div style={{color:'white',display:'flex',alignItems: 'center'}}>
-          <ArrowBackIosIcon sx={{color:'white',fontSize: '25px'}} />
-         <div style={{ color: "white", fontSize: '20px', marginLeft:'5px' }}> Back to barter history</div>
-         </div>
+        <Button variant="text" onClick={handleBackClick}>
+          <div style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
+            <ArrowBackIosIcon sx={{ color: 'white', fontSize: '25px' }} />
+            <div style={{ color: "white", fontSize: '20px', marginLeft: '5px' }}> Back to barter history</div>
+          </div>
         </Button>
-        <Button type="text" style={{paddingRight: '20px'}} onClick={() => {handleLogout() }} >
-                    <div style={{ color: "white", fontSize: '20px' }}> Logout</div>
-          </Button>
+        <Button type="text" style={{ paddingRight: '20px' }} onClick={() => { handleLogout() }} >
+          <div style={{ color: "white", fontSize: '20px' }}> Logout</div>
+        </Button>
       </div>
-      <div className="title" >
-        Community Barter
+      <div className="title">
+        <img style={{ width: '500px', margin: '30px' }} src={logoImg} alt="" />
       </div>
       <form id='form' onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '30px' }}>
         {/* register your input into the hook by invoking the "register" function */}
@@ -181,7 +182,7 @@ function ClientPage() {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        sx={{height:'100px'}}
+        sx={{ height: '100px' }}
       >
         <DialogTitle id="alert-dialog-title">
           {"New barter create successful"}
@@ -190,16 +191,16 @@ function ClientPage() {
           {"Please wait for the review to pass, it will take about 24 hours"}
         </DialogContent>
         <DialogActions>
-        <div style={{display:'flex', flexDirection:'row'}}>
-          <Button type="text" onClick={handleClose} >
-            Create a new
-          </Button>
-          <Button type="text" onClick={() => { setModal(false) }} >
-                            Close
-          </Button>
-        </div>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <Button type="text" onClick={handleClose} >
+              Create a new
+            </Button>
+            <Button type="text" onClick={() => { setModal(false) }} >
+              Close
+            </Button>
+          </div>
         </DialogActions>
-        
+
       </Dialog>
     </div>
   );
