@@ -26,9 +26,13 @@ import { visuallyHidden } from '@mui/utils';
 import Axios from "axios";
 import { createBrowserHistory } from 'history'
 import { HOST_URL } from "../configure";
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import Alert from '@mui/material/Alert';
+import Slide from '@mui/material/Slide';
 
 
-const status_list = ["Pending", "Decided", "Listed", "Sold"]
+const status_list = ["Pending", "Approved", "Listed", "Sold", "Reject"]
 const category_list = ["Clothing", "Electronics", "Books", "Others"]
 const condition_list = ["", "Fair", "Good", "Very good", "Never Worn"]
 
@@ -68,23 +72,12 @@ const headCells = [
         label: 'Name',
     },
     {
-        id: 'oiginal_price',
-        numeric: true,
-        disablePadding: true,
-        label: 'Original Price (£)',
-    },
-    {
         id: 'status',
         numeric: true,
         disablePadding: false,
         label: 'Status',
     },
-    {
-        id: 'determined',
-        numeric: true,
-        disablePadding: false,
-        label: 'Decided Price (£)',
-    },
+
     {
         id: 'details',
         numeric: true,
@@ -110,13 +103,12 @@ function EnhancedTableHead(props) {
         <TableHead>
             <TableRow>
                 <TableCell padding="checkbox">
-
                 </TableCell>
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                        align={'left'}
+                        padding={'16px'}
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
                         <TableSortLabel
@@ -205,8 +197,14 @@ export default function AdminPage() {
     const [selectedIndex, setSelectedIndex] = React.useState(0)
     const [showActionModal, setActionModal] = React.useState(false)
     const [decidedPrice, setDecidedPrice] = React.useState(0)
+    const [isApprove, setIsApprove] = React.useState(false)
+    const [successful, setSuccessful] = React.useState(false)
 
     useEffect(() => {
+        updateBarterList()
+    }, [])
+
+    const updateBarterList = () => {
         Axios.get(HOST_URL + "/barter").then((data) => {
             setRows(data.data)
             let idList = []
@@ -215,7 +213,7 @@ export default function AdminPage() {
             })
             setRowIdList(idList)
         });
-    }, [])
+    }
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -253,25 +251,12 @@ export default function AdminPage() {
         setModal(true)
     };
 
-    const handleClickAction = (event, id) => {
-        console.log('id is', id)
-        console.log("rowIdList:", rowIdList)
+    const handleClickAction = (approve, id) => {
 
         setSelectedIndex(rowIdList.indexOf(id))
         setActionModal(true)
+        setIsApprove(approve)
     };
-
-    const decidedPriceText = (index) => {
-        if (rows[index]) {
-            if (rows[index].status == 0) {
-                return (<div style={detailStyle}><div style={detailTitleStyle}>Decide Price:</div> {'Wait to decide'}</div>)
-            } else {
-                return (<div style={detailStyle}><div style={detailTitleStyle}>Decide Price:</div>  {rows[index].deal_price}</div>)
-            }
-        } else {
-            return
-        }
-    }
 
     const details = (row) => {
 
@@ -281,15 +266,16 @@ export default function AdminPage() {
     }
 
     const action = (row) => {
-        if(row.status==0){
-            return (
-                <Link onClick={(event) => handleClickAction(event, row.id)}>Decide price</Link>
-            )
-        }else{
-            return(
-                <div style={{color:'c0c0c0'}}></div>
-            )
-        }
+        return (<div style={{ display: 'flex', flexDirection: 'row' }}>
+            <Button onClick={() => handleClickAction(true, row.id)} style={{ backgroundColor: '#90b28d', width: '70px', height: '25px', padding: '5px', borderRadius: '10px', marginRight: '10px' }} >
+                <div style={{ color: "white", fontSize: '10px' }}> Approve</div>
+            </Button>
+
+            <Button onClick={() => handleClickAction(false, row.id)} style={{ backgroundColor: '#c85863', width: '70px', height: '25px', padding: '5px', borderRadius: '10px' }} >
+                <div style={{ color: "white", fontSize: '10px' }}> Reject</div>
+            </Button>
+        </div>
+        )
 
     }
 
@@ -298,9 +284,7 @@ export default function AdminPage() {
             if (rows[index].status == 0) {
                 return (
                     <div style={{ display: 'flex', flexDirection: 'row', margin: '30px' }}>
-                        <Button sx={{ marginLeft: '20px' }} onClick={() => { setModal(false); setActionModal(true) }} >
-                            <div style={{ color: "#ec5990" }}> Decide price</div>
-                        </Button>
+
                         <Button type="text" onClick={() => { setModal(false) }} >
                             Close
                         </Button>
@@ -314,12 +298,29 @@ export default function AdminPage() {
 
     }
 
-    const handleSubmitPrice = () => {
-        Axios.put(HOST_URL + "/update", { id: localStorage.getItem('userId'), status: 1, price: decidedPrice }).then((response) => {
+    const showAlert =()=>{
+        setSuccessful(true)
+        setTimeout(() => {
+            // After 3 seconds set the show value to false
+            setSuccessful(false)
+          }, 3000)
+    } 
+  
+    const handleAction = () => {
+        if (isApprove) {
+            Axios.put(HOST_URL + "/update", { id: rows[selectedIndex].id, status: 1 }).then((response) => {
+                setActionModal(false)
+                updateBarterList()
+                showAlert()
 
-            setActionModal(false)
-        });
-
+            });
+        } else {
+            Axios.put(HOST_URL + "/update", { id: rows[selectedIndex].id, status: 4 }).then((response) => {
+                setActionModal(false)
+                updateBarterList()
+                showAlert()
+            });
+        }
     }
 
     const detailStyle = {
@@ -334,8 +335,16 @@ export default function AdminPage() {
     }
 
     return (
-        <Box sx={{ width: '100%', paddingTop: '50px' }}>
-            <Paper sx={{ width: '80%', mb: 2, margin: '0 auto' }}>
+        <Box sx={{ width: '100%', paddingTop: '20px' }}>
+            {
+                successful?<Slide direction="left" in={successful} mountOnEnter unmountOnExit>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Alert sx={{ width: '20%', mb: 2, marginButton: '30px' }} severity="success">You successfully update the status of item</Alert>
+                </div>
+            </Slide>:<div style={{height:'45px', width:'100%'}}></div>
+            }
+            
+            <Paper sx={{ width: '50%', mb: 2, margin: '0 auto' }}>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <TableContainer>
                     <Table
@@ -351,7 +360,7 @@ export default function AdminPage() {
                             onRequestSort={handleRequestSort}
                             rowCount={rows.length}
                         />
-                        <TableBody>
+                        <TableBody sx={{ paddingX: '20px' }}>
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
@@ -367,14 +376,13 @@ export default function AdminPage() {
                                                 id={labelId}
                                                 scope="row"
                                                 padding="none"
+                                                align="left"
                                             >
                                                 {row.name}
                                             </TableCell>
-                                            <TableCell align="right">{row.price}</TableCell>
-                                            <TableCell align="right">{status_list[row.status]}</TableCell>
-                                            <TableCell align="right">{row.status == 0 ? 'wait to decide' : row.deal_price}</TableCell>
-                                            <TableCell align="right">{details(row)}</TableCell>
-                                            <TableCell align="right">{action(row)}</TableCell>
+                                            <TableCell align="left">{status_list[row.status]}</TableCell>
+                                            <TableCell align="left">{details(row)}</TableCell>
+                                            <TableCell align="center">{action(row)}</TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -416,9 +424,8 @@ export default function AdminPage() {
                         <div style={detailStyle}><div style={detailTitleStyle}>Stauts:</div> {rows[selectedIndex] ? status_list[rows[selectedIndex].status] : ''}</div>
                         <div style={detailStyle}><div style={detailTitleStyle}>Category:</div> {rows[selectedIndex] ? category_list[rows[selectedIndex].category] : ''}</div>
                         <div style={detailStyle}><div style={detailTitleStyle}>Condition:</div>{rows[selectedIndex] ? condition_list[rows[selectedIndex].condition_cat / 25] : ''}</div>
-                        <div style={detailStyle}><div style={detailTitleStyle}>Original Price:</div> {rows[selectedIndex] ? rows[selectedIndex].price : ''}</div>
+                        <div style={detailStyle}><div style={detailTitleStyle}>Price:</div> {rows[selectedIndex] ? rows[selectedIndex].price : ''}</div>
                         <div style={detailStyle}><div style={detailTitleStyle}>Description:</div> {rows[selectedIndex] ? rows[selectedIndex].description : ''}</div>
-                        {decidedPriceText(selectedIndex)}
 
                     </div>
 
@@ -436,22 +443,21 @@ export default function AdminPage() {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Decide a price for this item"}
+                    {"Please confirm"}
+
                 </DialogTitle>
                 <DialogContent >
-                    <div>
-
-                        <input style={{ borderColor: "#333" }} required placeholder="Price" onChange={(event) => {
-                            setDecidedPrice(event.target.value)
-                        }} />
-
+                    <div sytle={{ fontSize: '15px', display: 'flex', flexDirection: 'row' }}>
+                        {isApprove ? <DoneOutlineIcon fontSize="small" sx={{ marginRight: '8px', color: "#90b28d" }} /> : <RemoveCircleOutlineIcon fontSize="small" sx={{ marginRight: '8px', color: "#c85863" }} />}
+                        {isApprove ? "You are going to approve this item to be listed." : "You are going to refuse this item to be listed"}
                     </div>
-
-
                 </DialogContent>
                 <DialogActions>
-                    <Button sx={{ marginLeft: '20px' }} onClick={() => { handleSubmitPrice() }} >
-                        <div style={{ color: "#ec5990" }}> Submit</div>
+                    <Button sx={{ marginLeft: '20px' }} onClick={() => { handleAction(selectedIndex) }} >
+                        <div style={{ color: "#ec5990" }}> Yes</div>
+                    </Button>
+                    <Button type="text" onClick={() => { setActionModal(false) }} >
+                        Close
                     </Button>
                 </DialogActions>
             </Dialog>

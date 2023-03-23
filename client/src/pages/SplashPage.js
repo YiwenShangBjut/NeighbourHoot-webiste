@@ -13,8 +13,8 @@ function SplashPage() {
     function handleSubmit(event) {
         event.preventDefault();
         Axios.get(HOST_URL+"/user/"+username).then((data) => {
-         
-          localStorage.setItem("userId",data.data[0].id);
+            localStorage.setItem("points",data.data[0].points);
+            localStorage.setItem("userId",data.data[0].id);
     });
         
         history.replace({pathname:'/user',state: {}})

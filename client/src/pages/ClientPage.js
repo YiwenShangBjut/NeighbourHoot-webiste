@@ -91,17 +91,25 @@ function ClientPage() {
     history.go(0)
   }
 
+  const handleLogout=()=>{
+    localStorage.clear()
+    history.replace({pathname:'/',state: {}})
+    history.go(0)
+}
+
 
   return (
     <div>
-      <div >
-       
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Button variant="text"  onClick={handleBackClick}>
         <div style={{color:'white',display:'flex',alignItems: 'center'}}>
-          <ArrowBackIosIcon sx={{color:'white'}} />
-         <div> Back to barter history</div>
+          <ArrowBackIosIcon sx={{color:'white',fontSize: '25px'}} />
+         <div style={{ color: "white", fontSize: '20px', marginLeft:'5px' }}> Back to barter history</div>
          </div>
         </Button>
+        <Button type="text" style={{paddingRight: '20px'}} onClick={() => {handleLogout() }} >
+                    <div style={{ color: "white", fontSize: '20px' }}> Logout</div>
+          </Button>
       </div>
       <div className="title" >
         Community Barter
@@ -182,10 +190,16 @@ function ClientPage() {
           {"Please wait for the review to pass, it will take about 24 hours"}
         </DialogContent>
         <DialogActions>
+        <div style={{display:'flex', flexDirection:'row'}}>
           <Button type="text" onClick={handleClose} >
-            Create a new barter
+            Create a new
           </Button>
+          <Button type="text" onClick={() => { setModal(false) }} >
+                            Close
+          </Button>
+        </div>
         </DialogActions>
+        
       </Dialog>
     </div>
   );
