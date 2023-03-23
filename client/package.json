@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
-  "homepage": "https://yiwenshangbjut.github.io/community-barter",
+  "homepage": "https://yiwenshangbjut.github.io/community-barter/",
   "private": true,
   "dependencies": {
     "@emotion/core": "10.0.35",
