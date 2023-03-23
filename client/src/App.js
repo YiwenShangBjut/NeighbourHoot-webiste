@@ -7,9 +7,10 @@ import UserTable from "./pages/UserTable";
 import "./styles.css";
 
 function App() {
-
+  // add new page here
   return (
     <Routes>
+      
       <Route path="/" index element={<SplashPage />} />
       <Route path="user" element={<UserTable />} />
       <Route path="create" element={<ClientPage />} />
