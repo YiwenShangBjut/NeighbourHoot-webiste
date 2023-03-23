@@ -1,1 +1,1 @@
-export const HOST_URL="http://localhost:3001";
+export const HOST_URL="http://server-dev.eu-west-2.elasticbeanstalk.com";
