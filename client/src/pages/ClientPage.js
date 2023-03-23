@@ -65,7 +65,8 @@ function ClientPage() {
       condition_cat: condition,
       price: price,
       description: description,
-      user_id: localStorage.getItem('userId')
+      user_id: localStorage.getItem('userId'),
+      status: 0,
     }
 
     console.log("Submit: ", formValues)
